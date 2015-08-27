@@ -1,0 +1,12 @@
+root                    {{ DOCROOT }};
+{% if DDOS %}
+  {% include 'tmpl/ddos.j2' -%}
+{% endif %}
+{%- if SUSPENDED %}
+  {% include 'tmpl/suspended.j2' -%}
+{% endif %}
+{%- if BACKEND %}
+  {% include 'tmpl/backend.j2' %}
+
+  {% include 'tmpl/static.j2' -%}
+{% endif %}

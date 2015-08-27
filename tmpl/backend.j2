@@ -1,0 +1,9 @@
+# backend block
+  location / {
+    try_files             $uri $uri/ @backend;
+  }
+
+  location @backend {
+    proxy_pass            http://apache;
+    include               proxy.conf;
+  }

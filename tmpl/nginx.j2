@@ -1,0 +1,9 @@
+{%- if SSL -%}{%- if SSL_REDIRECT -%}
+{%- include 'tmpl/http.redirect.j2' -%}
+{%- include 'tmpl/https.j2' -%}
+  {% else %}
+{%- include 'tmpl/http.j2' %}
+{% include 'tmpl/https.j2' -%}
+  {% endif %}
+{% else %}{% include 'tmpl/http.j2' %}
+{% endif %}
