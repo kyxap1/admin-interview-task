@@ -10,13 +10,14 @@ LANG=C
 PATH="/bin:/usr/sbin:/usr/bin:/sbin:/usr/local/bin:/usr/local/sbin"
 DATE=$(date +%F)
 
-WORKDIR="/home/http/nest.pro-manage.net/html/krasnodar"
-TMPLDIR="tmpl"
+WORKDIR="/home/http/nest.pro-manage.net/html/krasnodar/task"
+CONFDIR="$WORKDIR/data"
+TMPLDIR="$WORKDIR/tmpl"
 JINJA_TMPL="$TMPLDIR/nginx.j2"
-DOMAINS_LIST="$WORKDIR/domains.list"
-DOMAINS_SSL="$WORKDIR/domains_ssl.list"
-DOMAINS_DDOS="$WORKDIR/ddos.list"
-ACCOUNTS_SUSPENDED="$WORKDIR/suspend.list"
+DOMAINS_LIST="$CONFDIR/domains.list"
+DOMAINS_SSL="$CONFDIR/domains_ssl.list"
+DOMAINS_DDOS="$CONFDIR/ddos.list"
+ACCOUNTS_SUSPENDED="$CONFDIR/suspend.list"
 LOG="$WORKDIR/process.log"
 
 #########################
@@ -24,6 +25,7 @@ LOG="$WORKDIR/process.log"
 print_error() { echo "$@" >&2; write_log "[ERROR] $@"; exit 1; }
 print_info()  { echo "$@"; write_log "[INFO] $@" || exit 1; }
 write_log()   { echo "$(date -R -u) $@" >> "$LOG"; }
+catf()			  { [[ -f $@ ]] && grep -vE "^(#|$|\s)" "$@" || print_error "File can not be read: $@"; }
 
 #########################
 
@@ -39,27 +41,27 @@ write_log()   { echo "$(date -R -u) $@" >> "$LOG"; }
 # read domains
 while read accname homedir domainname
 do
-	export ACCOUNT="$accname" DOCROOT="$homedir" DOMAIN="$domainname" BACKEND=1
+	export ACCOUNT="$accname" DOCROOT="$homedir/$domainname" DOMAIN="$domainname"
+	export SUSPENDED= SSL= SSL_REDIRECT= DDOS=
+	export BACKEND=1
 
-	if DDOS=$(grep -vE "^(#|$|\s)" "$DOMAINS_DDOS" | grep -wo "$domainname")
+	if RES=( $(catf "$DOMAINS_DDOS" | grep -w "$domainname") )
 	then
-		export DDOS BACKEND=
+		export DDOS="${RES[0]}" BACKEND=
 	fi
 
-	if SUSPENDED=$(grep -vE "^(#|$|\s)" "$ACCOUNTS_SUSPENDED" | grep -wo "$accname")
+	if RES=( $(catf "$ACCOUNTS_SUSPENDED" | grep -w "$accname") )
 	then
-		export SUSPENDED BACKEND=
+		export SUSPENDED="${RES[0]}" LOCALE="${RES[1]%_*}" BACKEND=
 	fi
 
-	if SSL=$(grep -vE "^(#|$|\s)" "$DOMAINS_SSL" | grep -w "$domainname")
+	if RES=( $(catf "$DOMAINS_SSL" | grep -w "$domainname") )
 	then
-		export SSL SSL_REDIRECT=$(echo $SSL | awk '{print $2}')
+		export SSL="${RES[0]}" SSL_REDIRECT="${RES[1]}"
 	fi
-
-	export ACCOUNT DOCROOT DOMAIN BACKEND DDOS SUSPENDED SSL SSL_REDIRECT
 
 	$JINJA "$JINJA_TMPL"
 
-done < <( grep -vE "^(#|$|\s)" "$DOMAINS_LIST" )
+done < <( catf "$DOMAINS_LIST" ) > conf/vhosts.conf
 
 #print_info "Finished generation"

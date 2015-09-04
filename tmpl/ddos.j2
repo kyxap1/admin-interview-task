@@ -1,11 +1,11 @@
 # ddos block
   location / {
-    try_files             $uri $uri/ @ddos;
+    try_files             $uri =503;
   }
 
   proxy_intercept_errors  on;
   error_page              503 @ddos;
 
-  @ddos {
+  location @ddos {
     rewrite               ^(.*)$ /503.html break;
   }

@@ -1,0 +1,10 @@
+# Format:
+# accname homedir domainname
+#
+aa126878 /home1/aa126878 testdomain1.ru
+aa126878 /home1/aa126878 testdomain2.ru
+fa133445 /home2/fa133445 testdomain1.com
+fa133445 /home2/fa133445 shop.testdomain1.com
+cd225675 /home3/cd225675 mysite.com.ru
+sd254546 /home3/sd254546 somesite.ru
+

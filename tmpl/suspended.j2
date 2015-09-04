@@ -1,8 +1,8 @@
 # suspended block
   location / {
-    try_files             /suspended.html $uri $uri/ @suspended;
+    try_files             @suspended $uri $uri/ =403;
   }
 
-  @suspended {
-    rewrite               ^(.*)$ /suspended.html break;
+  location @suspended {
+    rewrite               ^(.*)$ /suspended.{{ LOCALE }}.html break;
   }

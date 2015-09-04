@@ -2,7 +2,8 @@ server {
   listen                  443 ssl;
   server_name             {{ DOMAIN }};
 
-  ssl_certificate         /etc/ssl/private/{{ DOMAIN }}.pem;
-  ssl_certificate         /etc/ssl/private/{{ DOMAIN }}.key;
+  ssl_certificate         /etc/ssl/certs/{{ DOMAIN }}.pem;
+  ssl_certificate_key     /etc/ssl/private/{{ DOMAIN }}.key;
+  
   {% include 'tmpl/vhost.j2' %}
 }

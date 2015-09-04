@@ -1,0 +1,8 @@
+# Format:
+# domainname forcedredirect
+#
+# forcedredirect=1 means forced redirect from http to https
+#
+#testdomain1.com 1
+#testdomain2.ru
+
