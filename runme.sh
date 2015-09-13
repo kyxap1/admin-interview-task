@@ -25,7 +25,7 @@ LOG="$WORKDIR/process.log"
 print_error() { echo "$@" >&2; write_log "[ERROR] $@"; exit 1; }
 print_info()  { echo "$@"; write_log "[INFO] $@" || exit 1; }
 write_log()   { echo "$(date -R -u) $@" >> "$LOG"; }
-catf()			  { [[ -f $@ ]] && grep -vE "^(#|$|\s)" "$@" || print_error "File can not be read: $@"; }
+catf()	      { [[ -f $@ ]] && grep -vE "^(#|$|\s)" "$@" || print_error "File can not be read: $@"; }
 
 #########################
 
